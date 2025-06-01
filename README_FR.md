@@ -1,9 +1,82 @@
+<div align="center">
+  <a href="./README.md" style="text-decoration: none;">
+    <img src="https://img.shields.io/badge/Read_Documentation_in-English-blue?style=for-the-badge&logo=readthedocs" alt="English Documentation"/>
+  </a>
+      
+  <a href="./README_FR.md" style="text-decoration: none;">
+    <img src="https://img.shields.io/badge/Lire_la_Documentation_en-Français-red?style=for-the-badge&logo=readthedoc" alt="Documentation en Français"/>
+  </a>
+</div>
+
+---
+
 # API Distributeur Automatique
 
-Une API modulaire et testable pour un distributeur automatique, construite avec Java et Spring Boot, respectant les pratiques modernes d'architecture logicielle et de conception orientée objet. Le projet inclut également une interface utilisateur (frontend) React TypeScript pour la démonstration.
 
-![Interface utilisateur en anglais](./screenshots/ui_en.png "Webapp - Interface anglaise")
-![Interface utilisateur en français](./screenshots/ui_fr.png "Webapp - Interface française")
+Une API modulaire et testable pour un distributeur automatique, construite avec Java et Spring Boot, respectant les pratiques modernes d'architecture logicielle et de conception orientée objet. Le projet inclut également une interface utilisateur (frontend) React TypeScript pour la démonstration, disponible en français ou en anglais.
+
+<table>
+  <tr>
+    <td align="center">
+      <p><strong>Anglais</strong></p>
+      <img src="./screenshots/ui_en.png" alt="Webapp - Interface anglaise" title="Webapp - Interface anglaise" width="500" />
+    </td>
+    <td align="center">
+      <p><strong>Français</strong></p>
+      <img src="./screenshots/ui_fr.png" alt="Webapp - Interface française" title="Webapp - Interface française" width="500" />
+    </td>
+  </tr>
+</table>
+
+## Vous pouvez exécuter l'API (backend) sans avoir besoin d'installer le code, utilisez simplement Docker en exécutant ceci :
+```bash
+docker run -d -p 8080:8080 --name my-vending-api spamfake2022/vending-machine-api:latest
+``` 
+
+## Installation et Exécution de l'Application en utilisant le code source
+
+**Prérequis :**
+*   Java JDK 17 ou supérieur
+*   Apache Maven 3.6+ (ou utiliser le Maven Wrapper inclus pour le backend)
+*   Node.js et npm (ou yarn) pour le frontend
+
+### Backend (API Spring Boot) si vous utilisez Docker, cette partie n'est pas nécessaire
+
+1.  **Cloner le dépôt :**
+    ```bash
+    git clone https://github.com/khalilh2002/distributor
+    cd distributor/backend  
+    ```
+2.  **Compiler le projet :**
+    ```bash
+    ./mvnw clean package
+    ```
+3.  **Exécuter les tests avec le Maven Wrapper :**
+    ```bash
+    ./mvnw test
+    ```
+4.  **Exécuter l'application :**
+    ```bash
+    java -jar target/distributor-0.0.1-SNAPSHOT.jar
+    ```
+    L'API démarrera sur `http://localhost:8080`. Un fichier de base de données H2 (`vendingmachinedb.mv.db`) sera créé dans `backend/data/`.
+    Accès à la console H2 : `http://localhost:8080/h2-console` (URL JDBC : `jdbc:h2:file:./data/vendingmachinedb`).
+
+### Frontend (UI React)
+
+1.  **Naviguer vers le répertoire frontend :**
+    ```bash
+    cd distributor/frontend # Ou le nom de votre répertoire UI
+    ```
+2.  **Installer les dépendances :**
+    ```bash
+    npm install
+    ```
+3.  **Démarrer le serveur de développement :**
+    ```bash
+    npm start
+    ```
+    L'application React s'ouvrira typiquement sur `http://localhost:3000` et se connectera à l'API backend.
 
 ## Table des Matières
 
