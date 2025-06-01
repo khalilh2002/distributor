@@ -1,9 +1,9 @@
 # Vending Machine API
 
-A modular and testable API for a vending machine, built with **Java and Spring Boot and H2 database**, following modern software architecture and object-oriented design principles. The project also includes a **React TypeScript frontend** for demonstration.
+A modular and testable API for a vending machine, built with Java and Spring Boot, adhering to modern software architecture and object-oriented design principles. The project also includes a React TypeScript frontend for demonstration.
 
-![French UI](./screenshots/ui_fr.png "Webapp - French Interface")
 ![English UI](./screenshots/ui_en.png "Webapp - English Interface")
+![French UI](./screenshots/ui_fr.png "Webapp - French Interface")
 
 ## Table of Contents
 
@@ -26,7 +26,7 @@ This project implements a vending machine system with a RESTful API backend and 
 
 ## 2. Core Architectural Concepts
 
-The system follows a layered architecture for clear separation of concerns.
+The system is built upon a layered architecture (Controller, Service, Repository) to ensure a clear separation of concerns.
 
 ### Usecases
 
@@ -79,28 +79,185 @@ The database schema is straightforward, centered around the `Product` entity:
 
 ## 4. API Endpoints & Demonstration
 
-All backend API endpoints are prefixed with `/api/distributor`. The frontend UI interacts with these endpoints.
+All backend API endpoints are prefixed with `/api/distributor`.
 
-| Method | Endpoint            | Request Body Example                               | Description                                                                        |
-| :----- | :------------------ | :------------------------------------------------- | :--------------------------------------------------------------------------------- |
-| POST   | `/coin`             | `{"value": 5.00}`                                  | Inserts a coin. Returns current balance.                                           |
-| GET    | `/products`         | _N/A_                                              | Lists all products with name, price, and purchasable status.                       |
-| POST   | `/select`           | `{"productId": 1}`                                 | Adds one instance of the specified product to the selection.                       |
-| POST   | `/deselect`         | `{"productId": 1}`                                 | Removes one instance of the specified product from the selection.                  |
-| POST   | `/dispense`         | _N/A_                                              | Dispenses selected products if funds are sufficient and returns change.            |
-| POST   | `/cancel`           | _N/A_                                              | Cancels the transaction, refunds inserted coins.                                   |
-| GET    | `/state`            | _N/A_                                              | Shows current balance, selected items (with quantities), and total selected cost. |
-| POST   | `/admin/product`    | `{"name": "New Snack", "price": "2.75"}`           | (Admin) Adds a new product to the catalog.                                         |
+---
+**POST `/coin`**
+*   Description: Inserts a coin.
+*   Request Body: `{"value": 5.00}`
+*   Example Success Response (200 OK):
+    ```json
+    {
+        "currentBalance": 5.00
+    }
+    ```
+*   Example Error Response (400 Bad Request - Invalid Coin):
+    ```json
+    {
+        "error": "Invalid Coin",
+        "message": "Invalid coin value: 0.3. Accepted values: 10.00, 5.00, 2.00, 1.00, 0.50"
+    }
+    ```
 
-**Example cURL (Backend API Testing):**
-*   Insert 5 MAD coin:
-    ```bash
-    curl -X POST -H "Content-Type: application/json" -d '{"value": "5.00"}' http://localhost:8080/api/distributor/coin
+---
+**GET `/products`**
+*   Description: Lists all products with name, price, and purchasable status.
+*   Request Body: _N/A_
+*   Example Success Response (200 OK):
+    ```json
+    [
+        {
+            "id": 1,
+            "name": "Soda Classique",
+            "price": 3.50,
+            "purchasable": true
+        },
+        {
+            "id": 2,
+            "name": "Jus d'Orange Frais",
+            "price": 4.00,
+            "purchasable": true
+        },
+        {
+            "id": 3,
+            "name": "Eau Minérale Naturelle",
+            "price": 1.50,
+            "purchasable": false 
+        }
+    ]
     ```
-*   List products:
-    ```bash
-    curl -X GET http://localhost:8080/api/distributor/products
+    *(Purchasability depends on current balance and selected items)*
+
+---
+**POST `/select`**
+*   Description: Adds one instance of the specified product to the selection.
+*   Request Body: `{"productId": 1}`
+*   Example Success Response (200 OK):
+    ```json
+    {
+        "message": "Product 'Soda Classique' added to selection.",
+        "action": "selected",
+        "product": {
+            "id": 1,
+            "name": "Soda Classique",
+            "price": 3.50
+        },
+        "quantityOfThisProductInSelection": 1,
+        "currentSelectedItemsCost": 3.50,
+        "currentBalance": 5.00 
+    }
     ```
+*   Example Error Response (402 Payment Required - Insufficient Funds):
+    ```json
+    {
+        "error": "Insufficient Funds",
+        "message": "Insufficient funds to add 'Soda Classique' (3.50). Current selection cost: 2.00. Total needed: 5.50. Balance: 5.00"
+    }
+    ```
+
+---
+**POST `/deselect`**
+*   Description: Removes one instance of the specified product from the selection.
+*   Request Body: `{"productId": 1}`
+*   Example Success Response (200 OK):
+    ```json
+    {
+        "message": "One instance of product 'Soda Classique' removed from selection.",
+        "action": "deselected",
+        "product": {
+            "id": 1,
+            "name": "Soda Classique",
+            "price": 3.50
+        },
+        "quantityOfThisProductRemainingInSelection": 0,
+        "currentSelectedItemsCost": 0.00,
+        "currentBalance": 5.00
+    }
+    ```
+*   Example Error Response (400 Bad Request - Product not in selection):
+    ```json
+    {
+        "message": "Product with ID 1 not found in current selection or does not exist."
+    }
+    ```
+
+---
+**POST `/dispense`**
+*   Description: Dispenses selected products if funds are sufficient and returns change.
+*   Request Body: _N/A_
+*   Example Success Response (200 OK):
+    ```json
+    {
+        "dispensedProducts": [
+            {"id": 1, "name": "Soda Classique", "price": 3.50},
+            {"id": 3, "name": "Eau Minérale Naturelle", "price": 1.50}
+        ],
+        "changeCoins": [0.50, 0.50],
+        "message": "Products dispensed. Thank you!"
+    }
+    ```
+*   Example Error Response (400 Bad Request - No items selected):
+    ```json
+    {
+        "error": "No Item Selected",
+        "message": "No products selected for dispensing."
+    }
+    ```
+
+---
+**POST `/cancel`**
+*   Description: Cancels the transaction, refunds inserted coins.
+*   Request Body: _N/A_
+*   Example Success Response (200 OK):
+    ```json
+    {
+        "refundedCoins": [5.00, 2.00],
+        "message": "Transaction cancelled. Coins refunded."
+    }
+    ```
+
+---
+**GET `/state`**
+*   Description: Shows current balance, selected items (with quantities), and total selected cost.
+*   Request Body: _N/A_
+*   Example Success Response (200 OK):
+    ```json
+    {
+        "currentBalance": 7.00,
+        "selectedProducts": [
+            {
+                "id": 1,
+                "name": "Soda Classique",
+                "price": 3.50,
+                "quantity": 2
+            }
+        ],
+        "totalSelectedCost": 7.00
+    }
+    ```
+
+---
+**POST `/admin/product`**
+*   Description: (Admin) Adds a new product to the catalog.
+*   Request Body: `{"name": "New Energy Drink", "price": "6.00"}`
+*   Example Success Response (201 Created):
+    ```json
+    {
+        "id": 9,
+        "name": "New Energy Drink",
+        "price": 6.00
+    }
+    ```
+
+---
+
+**General Error Response Format (Example for 404 Not Found):**
+```json
+{
+    "error": "Product Not Found",
+    "message": "Product with ID 999 not found."
+}
+```
 
 ## 5. Setup and Running the Application
 
@@ -131,7 +288,7 @@ All backend API endpoints are prefixed with `/api/distributor`. The frontend UI 
 
 1.  **Navigate to the frontend directory:**
     ```bash
-    cd <repository-name>/frontend # Or your UI project directory name
+    cd distributor/frontend # Or your UI project directory name
     ```
 2.  **Install dependencies:**
     ```bash
@@ -149,7 +306,7 @@ All backend API endpoints are prefixed with `/api/distributor`. The frontend UI 
 
 The backend project includes unit tests for the core service logic.
 
-*   Navigate to the backend project directory (`<repository-name>/backend`).
+*   Navigate to the backend project directory (`distributor/backend`).
 *   Run tests using Maven Wrapper:
     ```bash
     ./mvnw test
