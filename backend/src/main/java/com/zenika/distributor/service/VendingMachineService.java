@@ -57,7 +57,6 @@ public class VendingMachineService {
     BigDecimal totalSelectedCost = selectedProducts.stream()
       .map(Product::getPrice)
       .reduce(BigDecimal.ZERO, BigDecimal::add);
-    // Available balance for *new* selections
     BigDecimal spendableForNewItems = currentBalance.subtract(totalSelectedCost);
 
     return productRepository.findAll().stream()
@@ -97,9 +96,6 @@ public class VendingMachineService {
    * @return The Product object that was removed, or null if no such product was found in the selection.
    */
   public Product deselectProduct(Long productId) {
-    // We don't need to check repository here if we only care about removing from selection.
-    // However, returning the actual product details (name, price) is often useful for the response.
-    // For simplicity, we'll iterate and remove.
     for (int i = 0; i < selectedProducts.size(); i++) {
       Product selected = selectedProducts.get(i);
       if (selected.getId().equals(productId)) {

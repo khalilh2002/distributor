@@ -32,15 +32,12 @@ public class Product {
   @DecimalMin(value = "0.0", inclusive = false, message = "Price must be positive")
   private BigDecimal price;
 
-  // Crucial for correct List.remove(Object) and Set behavior with JPA entities
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     Product product = (Product) o;
     // Only compare by ID if both IDs are not null.
-    // If IDs are null (e.g., before persistence), rely on object identity or other fields.
-    // However, for selection logic, we'll primarily deal with persisted products.
     return id != null && Objects.equals(id, product.id);
   }
 
@@ -51,7 +48,7 @@ public class Product {
   }
 
   @Override
-  public String toString() { // Optional: A simple toString can be helpful
+  public String toString() {
     return "Product{" +
       "id=" + id +
       ", name='" + name + '\'' +

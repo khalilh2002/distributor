@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/distributor") // Changed from /api/vending as per your provided controller
+@RequestMapping("/api/distributor")
 public class VendingMachineController {
 
   private final VendingMachineService vendingMachineService;
@@ -63,9 +63,6 @@ public class VendingMachineController {
     Product productThatWasDeselected = vendingMachineService.deselectProduct(request.getProductId());
 
     if (productThatWasDeselected == null) {
-      // It's also good to check if the product ID is valid in the catalog at all,
-      // but deselectProduct in service will return null if not in selection.
-      // For a more specific error, the controller could call productRepository.existsById first.
       return ResponseEntity.badRequest().body(Map.of(
         "message", "Product with ID " + request.getProductId() + " not found in current selection or does not exist."
       ));
@@ -104,6 +101,7 @@ public class VendingMachineController {
     Product newProduct = vendingMachineService.addProduct(request.getName(), request.getPrice());
     return ResponseEntity.status(201).body(newProduct);
   }
+
   @GetMapping("/state")
   public ResponseEntity<Map<String, Object>> getCurrentState() {
     List<Product> currentSelectionRaw = vendingMachineService.getSelectedProducts();
@@ -114,7 +112,6 @@ public class VendingMachineController {
     List<Map<String, Object>> selectedItemsWithQuantity = groupedById.entrySet().stream()
       .map(entry -> {
         Product p = entry.getValue().get(0); // Get representative product for name/price
-        // Using HashMap for inner map for clarity, Map.of is also fine here
         Map<String, Object> productMap = new HashMap<>();
         productMap.put("id", p.getId());
         productMap.put("name", p.getName());
@@ -124,7 +121,6 @@ public class VendingMachineController {
       })
       .collect(Collectors.toList());
 
-    // Use a HashMap for the outer map to avoid Map.of type inference issues
     Map<String, Object> responseBody = new HashMap<>();
     responseBody.put("currentBalance", vendingMachineService.getCurrentBalance());
     responseBody.put("selectedProducts", selectedItemsWithQuantity);
