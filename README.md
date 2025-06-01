@@ -1,6 +1,9 @@
 # Vending Machine API
 
-A modular and testable API for a vending machine, built with Java and Spring Boot, adhering to modern software architecture and object-oriented design principles.
+A modular and testable API for a vending machine, built with **Java and Spring Boot and H2 database**, following modern software architecture and object-oriented design principles. The project also includes a **React TypeScript frontend** for demonstration.
+
+![French UI](./screenshots/ui_fr.png "Webapp - French Interface")
+![English UI](./screenshots/ui_en.png "Webapp - English Interface")
 
 ## Table of Contents
 
@@ -12,80 +15,71 @@ A modular and testable API for a vending machine, built with Java and Spring Boo
 3.  [Technologies Used](#technologies-used)
 4.  [API Endpoints & Demonstration](#api-endpoints--demonstration)
 5.  [Setup and Running the Application](#setup-and-running-the-application)
-6.  [Running Tests](#running-tests)
+    *   [Backend Spring Boot API](#backend-spring-boot-api)
+    *   [Frontend React UI](#frontend-react-ui)
+6.  [Running Tests Backend](#running-tests-backend)
 7.  [Assumptions & Design Choices](#assumptions--design-choices)
 
 ## 1. Project Overview
 
-This API simulates the operations of a vending machine, allowing users to:
-*   Insert valid coins (MAD currency).
-*   View a catalog of available products with their prices and purchasability status.
-*   Select and deselect one or more products.
-*   Dispense selected products if sufficient funds are available.
-*   Receive appropriate change.
-*   Cancel the transaction and retrieve inserted coins.
-
-The API is designed for clarity, testability, and adherence to good software engineering practices.
+This project implements a vending machine system with a RESTful API backend and a React frontend. It allows users to perform standard vending machine operations such as inserting coins, selecting products, and receiving items with change.
 
 ## 2. Core Architectural Concepts
 
-The system is built upon a layered architecture (Controller, Service, Repository) to ensure a clear separation of concerns.
+The system follows a layered architecture for clear separation of concerns.
 
 ### Usecases
 
-The primary interactions (usecases) supported by the API for a standard **User** are:
-*   **Insert Coins:** Accepts valid MAD denominations (0.5, 1, 2, 5, 10) and rejects invalid ones.
-*   **View Product Catalog:** Displays all products, their names, prices, and whether they can be purchased with the current balance.
-*   **Select Product:** Adds a product to the current transaction's selection. Multiple instances of the same product can be selected.
-*   **Deselect Product:** Removes one instance of a previously selected product.
-*   **Dispense Products:** If funds are sufficient for all selected items, dispenses products and calculates optimized change.
-*   **Cancel Transaction:** Refunds all inserted coins and clears the current selection.
-*   **View Current State:** Allows checking the current inserted balance and selected items.
+The primary user interactions with the vending machine are depicted below:
 
-An **Administrator** can:
-*   **Add New Product:** Introduce new products to the vending machine's catalog.
+![Usecase Diagram](./screenshots/usecase.png "Usecase Diagram")
+
+Key usecases include inserting coins, viewing and selecting/deselecting products, dispensing items, and canceling transactions. Administrator functions include adding new products.
 
 ### Key Classes & Domain Model
 
-The system revolves around a few core classes and data structures:
+The core components of the backend system and their relationships are illustrated in the class diagram:
 
-*   **`Product` (Entity):** Represents an item available in the vending machine.
-    *   Attributes: `id` (Long), `name` (String), `price` (BigDecimal).
-*   **`Coin` (Enum):** Defines valid coin denominations (e.g., `ONE_MAD`, `FIVE_MAD`) and their values.
-*   **`VendingMachineService` (Service):** Contains the core business logic. It manages the transactional state (current balance, inserted coins, selected products) and orchestrates operations like coin insertion, product selection, dispensing, and change calculation. It is an application-scoped singleton, representing a single physical machine.
-*   **`VendingMachineController` (Controller):** Exposes the RESTful API endpoints, handles incoming HTTP requests, validates input (using DTOs), and delegates business logic to `VendingMachineService`.
-*   **`ProductRepository` (Repository):** An interface (extending Spring Data JPA's `JpaRepository`) responsible for data access operations related to `Product` entities (CRUD).
-*   **DTOs (Data Transfer Objects):** Various DTOs (e.g., `ProductDTO`, `CoinInsertRequest`, `SelectionRequest`, `DispenseResponse`, `RefundResponse`) are used to transfer data between the controller and service layers, and for API request/response bodies. This decouples the API from the internal domain model.
-*   **Custom Exceptions:** Specific exceptions (e.g., `InvalidCoinException`, `InsufficientFundsException`, `ProductNotFoundException`) are used for clear error handling.
-*   **`GlobalExceptionHandler`:** A `@ControllerAdvice` component that intercepts exceptions thrown by controllers or services and formats them into consistent JSON error responses.
+![Class Diagram](./screenshots/class.png "Class Diagram")
+
+*   **`Product` (Entity):** Represents items in the machine (ID, name, price).
+*   **`Coin` (Enum):** Defines valid MAD coin denominations.
+*   **`VendingMachineService` (Service):** Manages business logic and transactional state (balance, selected items).
+*   **`VendingMachineController` (Controller):** Exposes REST API endpoints and delegates to the service.
+*   **`ProductRepository` (Repository):** Handles data access for `Product` entities via Spring Data JPA.
+*   **DTOs:** Used for API request/response bodies and data transfer (e.g., `ProductDTO`, `SelectionRequest`).
+*   **Custom Exceptions & `GlobalExceptionHandler`:** Provide structured error handling and JSON error responses.
 
 ### Database Design
 
-The database schema is simple and primarily driven by the `Product` entity.
+The database schema is straightforward, centered around the `Product` entity:
 
-*   **`PRODUCT` Table:**
-    *   `ID` (Primary Key, Auto-Incremented): Unique identifier for the product.
-    *   `NAME` (VARCHAR): Name of the product.
-    *   `PRICE` (DECIMAL): Price of the product.
+![Database Diagram](./screenshots/db.png "Database Schema")
 
-This structure is managed by JPA (Hibernate) based on the `Product` entity definition. The H2 database is used for simplicity during development and testing, configured for file-based persistence.
+*   **`PRODUCT` Table:** Stores product details (ID, name, price). Managed by JPA/Hibernate.
 
 ## 3. Technologies Used
 
-*   **Java 17**
-*   **Spring Boot 3.x** (e.g., 3.3.0 or as per `pom.xml`)
-    *   Spring Web (for REST APIs)
-    *   Spring Data JPA (for database interaction)
-    *   Spring Validation (for request validation)
-*   **Hibernate 6.x** (as the JPA provider)
-*   **H2 Database Engine** (File-based persistent mode)
-*   **Maven** (Build and dependency management)
-*   **Lombok** (To reduce boilerplate code)
-*   **JUnit 5 & Mockito** (For unit testing)
+**Backend (Spring Boot API):**
+*   Java 17
+*   Spring Boot 3.x (as per `pom.xml`)
+*   Spring Web, Spring Data JPA, Spring Validation
+*   Hibernate 6.x
+*   H2 Database Engine (File-based persistent mode)
+*   Maven
+*   Lombok
+*   JUnit 5 & Mockito
+
+**Frontend (React UI):**
+*   React
+*   TypeScript
+*   Axios (for API calls)
+*   Bootstrap 5 (for styling)
+*   i18next (for internationalization - English & French)
 
 ## 4. API Endpoints & Demonstration
 
-All endpoints are prefixed with `/api/distributor`.
+All backend API endpoints are prefixed with `/api/distributor`. The frontend UI interacts with these endpoints.
 
 | Method | Endpoint            | Request Body Example                               | Description                                                                        |
 | :----- | :------------------ | :------------------------------------------------- | :--------------------------------------------------------------------------------- |
@@ -98,80 +92,76 @@ All endpoints are prefixed with `/api/distributor`.
 | GET    | `/state`            | _N/A_                                              | Shows current balance, selected items (with quantities), and total selected cost. |
 | POST   | `/admin/product`    | `{"name": "New Snack", "price": "2.75"}`           | (Admin) Adds a new product to the catalog.                                         |
 
-**Example cURL commands:**
-
-*   **Insert 5 MAD coin:**
+**Example cURL (Backend API Testing):**
+*   Insert 5 MAD coin:
     ```bash
     curl -X POST -H "Content-Type: application/json" -d '{"value": "5.00"}' http://localhost:8080/api/distributor/coin
     ```
-*   **List products:**
+*   List products:
     ```bash
     curl -X GET http://localhost:8080/api/distributor/products
-    ```
-*   **Select product with ID 1:**
-    ```bash
-    curl -X POST -H "Content-Type: application/json" -d '{"productId": 1}' http://localhost:8080/api/distributor/select
-    ```
-*   **View current state:**
-    ```bash
-    curl -X GET http://localhost:8080/api/distributor/state
-    ```
-*   **Dispense:**
-    ```bash
-    curl -X POST http://localhost:8080/api/distributor/dispense
     ```
 
 ## 5. Setup and Running the Application
 
 **Prerequisites:**
 *   Java JDK 17 or higher
-*   Apache Maven 3.6+ (or use the included Maven Wrapper)
+*   Apache Maven 3.6+ (or use the included Maven Wrapper for the backend)
+*   Node.js and npm (or yarn) for the frontend
 
-**Steps:**
+### Backend (Spring Boot API)
 
 1.  **Clone the repository:**
     ```bash
-    git clone <repository-url>
-    cd <repository-name> # Navigate into the backend project directory if in a monorepo
+    git clone https://github.com/khalilh2002/distributor
+    cd distributor/backend  
     ```
 2.  **Build the project:**
-    Using Maven Wrapper (recommended):
     ```bash
     ./mvnw clean package
-    ```
-    Or, if you have Maven installed globally:
-    ```bash
-    mvn clean package
     ```
 3.  **Run the application:**
     ```bash
     java -jar target/distributor-0.0.1-SNAPSHOT.jar
     ```
-    (The JAR filename might vary slightly based on the artifactId and version in `pom.xml`).
+    The API will start on `http://localhost:8080`. An H2 database file will be created in `backend/data/`.
+    Access H2 console: `http://localhost:8080/h2-console` (JDBC URL: `jdbc:h2:file:./data/vendingmachinedb`).
 
-The API will typically start on `http://localhost:8080`.
-An H2 database file (`vendingmachinedb.mv.db`) will be created in a `data/` subdirectory within the project root upon first run.
-The H2 console can be accessed at `http://localhost:8080/h2-console` (JDBC URL: `jdbc:h2:file:./data/vendingmachinedb`).
+### Frontend (React UI)
 
-## 6. Running Tests
+1.  **Navigate to the frontend directory:**
+    ```bash
+    cd <repository-name>/frontend # Or your UI project directory name
+    ```
+2.  **Install dependencies:**
+    ```bash
+    npm install
+   
+    ```
+3.  **Start the development server:**
+    ```bash
+    npm start
+  
+    ```
+    The React application will typically open on `http://localhost:3000` and connect to the backend API.
 
-The project includes unit tests for the core service logic.
+## 6. Running Tests (Backend)
 
-*   **To run all tests using Maven Wrapper:**
+The backend project includes unit tests for the core service logic.
+
+*   Navigate to the backend project directory (`<repository-name>/backend`).
+*   Run tests using Maven Wrapper:
     ```bash
     ./mvnw test
     ```
-*   **To run all tests using globally installed Maven:**
-    ```bash
-    mvn test
-    ```
-Test results will be displayed in the console. Detailed reports can often be found in the `target/surefire-reports` directory.
-Code coverage reports (if JaCoCo is configured) are typically in `target/site/jacoco/index.html`.
+Test results are displayed in the console. Reports are in `target/surefire-reports`.
+Code coverage (if JaCoCo is configured): `target/site/jacoco/index.html`.
 
 ## 7. Assumptions & Design Choices
 
-*   **Unlimited Stock:** The vending machine is assumed to have an unlimited stock of products and an unlimited supply of coins for making change.
-*   **Optimized Change:** Change is calculated using a greedy algorithm (largest denominations first).
-*   **Single Machine State:** The `VendingMachineService` is application-scoped, simulating a single physical machine. Its state (balance, selections) is reset after a dispense or cancellation.
-*   **MAD Currency:** All monetary values are assumed to be in Moroccan Dirham (MAD).
-*   **H2 File Persistence:** Data (products, and transaction state during operation) is persisted to a local H2 file database for development simplicity.
+*   **Unlimited Stock:** Products and change are assumed to be unlimited.
+*   **Optimized Change:** A greedy algorithm is used for change.
+*   **Single Machine State:** The backend service simulates a single machine state.
+*   **MAD Currency:** All monetary values are in Moroccan Dirham.
+*   **H2 File Persistence:** The backend uses a local H2 file database for data persistence.
+*   **CORS:** Configured to allow requests from `http://localhost:3000` (the default React dev server).
