@@ -1,0 +1,35 @@
+# General
+.DS_Store
+*.swp
+*~
+*.log
+*.tmp
+
+# Java / Maven / Spring Boot (for the backend folder)
+backend/target/
+backend/.idea/
+backend/*.iml
+backend/.mvn/
+backend/HELP.md # Usually specific to Spring Initializr, can be kept or ignored
+# Add any other Java/IDE specific files
+
+# Node.js / React (for the frontend folder)
+frontend/node_modules/
+frontend/build/
+frontend/.pnp
+frontend/.pnp.js
+frontend/coverage/
+frontend/.DS_Store
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+# Add any other Node/IDE specific files
+
+# IDE-specific files at the root (if any)
+.idea/
+*.iml
+.vscode/
