@@ -1,9 +1,71 @@
 # Vending Machine API
 
-A modular and testable API for a vending machine, built with Java and Spring Boot, adhering to modern software architecture and object-oriented design principles. The project also includes a React TypeScript frontend for demonstration.
+A modular and testable API for a vending machine, built with Java and Spring Boot , following to modern software architecture and object-oriented design principles. The project also includes a React TypeScript frontend for demonstration with french or english.
+<table>
+  <tr>
+    <td align="center">
+      <p><strong>English</strong></p>
+      <img src="./screenshots/ui_en.png" alt="Webapp - English Interface" title="Webapp - English Interface" width="500" />
+    </td>
+    <td align="center">
+      <p><strong>French</strong></p>
+      <img src="./screenshots/ui_fr.png" alt="Webapp - French Interface" title="Webapp - French Interface" width="500" />
+    </td>
+  </tr>
+</table>
 
-![English UI](./screenshots/ui_en.png "Webapp - English Interface")
-![French UI](./screenshots/ui_fr.png "Webapp - French Interface")
+
+## you can run the api (backend) without the need to install the code you can just use docker just run this
+```bash
+docker run -d -p 8080:8080 --name my-vending-api spamfake2022/vending-machine-api:latest
+``` 
+## Setup and Running the Application using the code
+
+**Prerequisites:**
+*   Java JDK 17 or higher
+*   Apache Maven 3.6+ (or use the included Maven Wrapper for the backend)
+*   Node.js and npm (or yarn) for the frontend
+
+### Backend (Spring Boot API) if you use the docker you dont need this part
+
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/khalilh2002/distributor
+    cd distributor/backend  
+    ```
+2.  **Build the project:**
+    ```bash
+    ./mvnw clean package
+    ```
+3. **Run tests using Maven Wrapper**
+    ```bash
+    ./mvnw test
+    ```
+4.  **Run the application:**
+    ```bash
+    java -jar target/distributor-0.0.1-SNAPSHOT.jar
+    ```
+    The API will start on `http://localhost:8080`. An H2 database file will be created in `backend/data/`.
+    Access H2 console: `http://localhost:8080/h2-console` (JDBC URL: `jdbc:h2:file:./data/vendingmachinedb`).
+
+### Frontend (React UI)
+
+1.  **Navigate to the frontend directory:**
+    ```bash
+    cd distributor/frontend # Or your UI project directory name
+    ```
+2.  **Install dependencies:**
+    ```bash
+    npm install
+   
+    ```
+3.  **Start the development server:**
+    ```bash
+    npm start
+  
+    ```
+    The React application will typically open on `http://localhost:3000` and connect to the backend API.
+
 
 ## Table of Contents
 
@@ -253,48 +315,6 @@ All backend API endpoints are prefixed with `/api/distributor`.
 }
 ```
 
-## 5. Setup and Running the Application
-
-**Prerequisites:**
-*   Java JDK 17 or higher
-*   Apache Maven 3.6+ (or use the included Maven Wrapper for the backend)
-*   Node.js and npm (or yarn) for the frontend
-
-### Backend (Spring Boot API)
-
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/khalilh2002/distributor
-    cd distributor/backend  
-    ```
-2.  **Build the project:**
-    ```bash
-    ./mvnw clean package
-    ```
-3.  **Run the application:**
-    ```bash
-    java -jar target/distributor-0.0.1-SNAPSHOT.jar
-    ```
-    The API will start on `http://localhost:8080`. An H2 database file will be created in `backend/data/`.
-    Access H2 console: `http://localhost:8080/h2-console` (JDBC URL: `jdbc:h2:file:./data/vendingmachinedb`).
-
-### Frontend (React UI)
-
-1.  **Navigate to the frontend directory:**
-    ```bash
-    cd distributor/frontend # Or your UI project directory name
-    ```
-2.  **Install dependencies:**
-    ```bash
-    npm install
-   
-    ```
-3.  **Start the development server:**
-    ```bash
-    npm start
-  
-    ```
-    The React application will typically open on `http://localhost:3000` and connect to the backend API.
 
 ## 6. Running Tests (Backend)
 
