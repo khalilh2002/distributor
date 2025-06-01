@@ -1,3 +1,15 @@
+<div align="center">
+  <a href="./README.md" style="text-decoration: none;">
+    <img src="https://img.shields.io/badge/Read_Documentation_in-English-blue?style=for-the-badge&logo=readthedocs" alt="English Documentation"/>
+  </a>
+      
+  <a href="./README_FR.md" style="text-decoration: none;">
+    <img src="https://img.shields.io/badge/Lire_la_Documentation_en-Français-red?style=for-the-badge&logo=readthedoc" alt="Documentation en Français"/>
+  </a>
+</div>
+
+---
+
 # Vending Machine API
 
 A modular and testable API for a vending machine, built with Java and Spring Boot , following to modern software architecture and object-oriented design principles. The project also includes a React TypeScript frontend for demonstration with french or english.
