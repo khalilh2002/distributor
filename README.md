@@ -94,9 +94,9 @@ All backend API endpoints are prefixed with `/api/distributor`.
 *   Example Error Response (400 Bad Request - Invalid Coin):
     ```json
     {
-        "error": "Invalid Coin",
-        "message": "Invalid coin value: 0.3. Accepted values: 10.00, 5.00, 2.00, 1.00, 0.50"
-    }
+       "error": "Invalid Coin",
+       "message": "Invalid coin value: 5.1. Accepted values: 10.00, 5.00, 2.00, 1.00, 0.50"
+   }
     ```
 
 ---
@@ -117,12 +117,6 @@ All backend API endpoints are prefixed with `/api/distributor`.
             "name": "Jus d'Orange Frais",
             "price": 4.00,
             "purchasable": true
-        },
-        {
-            "id": 3,
-            "name": "Eau Minérale Naturelle",
-            "price": 1.50,
-            "purchasable": false 
         }
     ]
     ```
