@@ -99,7 +99,7 @@ Ce projet implémente un système de distributeur automatique avec un backend AP
 
 ## 2. Concepts Architecturaux Clés
 
-Le système est construit sur une architecture en couches (Contrôleur, Service, Référentiel) pour assurer une séparation claire des préoccupations.
+Le système est construit sur une architecture en couches (Controller, Service, Repository) pour assurer une séparation claire des préoccupations.
 
 ### Cas d'Utilisation
 
